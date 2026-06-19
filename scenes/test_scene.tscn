@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://b5yylsfed4dkb"]
+
+[ext_resource type="Script" uid="uid://deumis18hyjht" path="res://scripts/game-modes/base-tetris.gd" id="1_g7g4h"]
+[ext_resource type="Script" uid="uid://c568uc2hcdhhw" path="res://scripts/resources/tetromino.gd" id="2_7ddre"]
+[ext_resource type="Resource" uid="uid://dtgvc86gjedmj" path="res://prefabs/tetrominoes/square_tetromino.tres" id="3_qjeyg"]
+[ext_resource type="Resource" uid="uid://datlxm2rgdw0p" path="res://prefabs/tetrominoes/straight_tetromino.tres" id="4_3qnke"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g7g4h"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_j8ivh"]
+sky_material = SubResource("ProceduralSkyMaterial_g7g4h")
+
+[sub_resource type="Environment" id="Environment_nd71p"]
+background_mode = 2
+sky = SubResource("Sky_j8ivh")
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_2golg"]
+size = Vector3(5, 0.2, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g7g4h"]
+size = Vector3(0.2, 5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_j8ivh"]
+size = Vector3(0.2, 5, 0.5)
+
+[node name="TestScene" type="Node3D" unique_id=61507805]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1274420403]
+environment = SubResource("Environment_nd71p")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=807678434]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Arena" type="Node3D" parent="." unique_id=395562063]
+
+[node name="Floor" type="MeshInstance3D" parent="Arena" unique_id=1748557129]
+mesh = SubResource("BoxMesh_2golg")
+
+[node name="Wall" type="MeshInstance3D" parent="Arena" unique_id=694833378]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 2.586, 0)
+mesh = SubResource("BoxMesh_g7g4h")
+
+[node name="Wall2" type="MeshInstance3D" parent="Arena" unique_id=1397003522]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 2.586, 0)
+mesh = SubResource("BoxMesh_j8ivh")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=946148244]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.003, 5.619)
+
+[node name="BaseTetris" type="Node" parent="." unique_id=1106971543]
+script = ExtResource("1_g7g4h")
+tetrominos = Array[ExtResource("2_7ddre")]([ExtResource("3_qjeyg"), ExtResource("4_3qnke")])
+metadata/_custom_type_script = "uid://deumis18hyjht"

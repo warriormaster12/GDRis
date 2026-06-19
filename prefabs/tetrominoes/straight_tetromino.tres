@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Tetromino" format=3 uid="uid://datlxm2rgdw0p"]
+
+[ext_resource type="Script" uid="uid://c568uc2hcdhhw" path="res://scripts/resources/tetromino.gd" id="1_kilvi"]
+
+[resource]
+script = ExtResource("1_kilvi")
+shape = [[1], [1], [1], [1]]
+color = "blue"
+metadata/_custom_type_script = "uid://c568uc2hcdhhw"
