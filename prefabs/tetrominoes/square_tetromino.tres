@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_w7dpg")
-shape = [[1, 1], [1, 1]]
+shape = Array[Vector2]([Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
 color = "yellow"
 metadata/_custom_type_script = "uid://c568uc2hcdhhw"

@@ -3,8 +3,8 @@ class_name BaseTetris
 
 @export var tetrominos: Array[Tetromino] = []
 
-var columns: float = 10
-var rows: float = 20
+var columns: int = 10
+var rows: int = 20
 
 var field: Array = []
 
@@ -15,7 +15,7 @@ var tetromino_aabb: AABB
 
 var tetromino_timer: Timer = Timer.new()
 
-var new_x_pos: int = -1
+var new_x_pos: int = 0
 
 
 # Called when the node enters the scene tree for the first time.
@@ -32,58 +32,61 @@ func _ready() -> void:
 	p_debug_render_play_area()
 
 func convert_to_world_coords(position: Vector2i, use_normalized_range: bool = false) -> Vector2:
-	var norm_coords: Vector2 = Vector2(position.x / columns, position.y / rows)
+	var norm_coords: Vector2 = Vector2(float(position.x) / float(columns), float(position.y) / float(rows))
 	return norm_coords if use_normalized_range else Vector2(2 * norm_coords.x -1, 2 * norm_coords.y -1)
 
-func _input(event: InputEvent) -> void:
-	if !current_tetromino: return
-
-	if event.is_action_pressed("move_l"):
-		new_x_pos = maxi(current_tetromino.position.x - 1, 0)
-	if event.is_action_pressed("move_r"):
-		new_x_pos = min(current_tetromino.position.x + 1, columns - current_tetromino.get_size().x)
+#func _input(event: InputEvent) -> void:
 	#if event.is_action_pressed("rotate"):
 		#current_tetromino.rotate_z(deg_to_rad(90))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
+	if current_tetromino:
+		if Input.is_action_pressed("move_l"):
+			new_x_pos = -1
+		elif Input.is_action_pressed("move_r"):
+			new_x_pos = 1
+		else:
+			new_x_pos = 0
 	if Input.is_action_pressed("speed_up"):
 		tetromino_timer.set_wait_time(0.2)
 	elif Input.is_action_just_released("speed_up"):
 		tetromino_timer.set_wait_time(1.0)
+
+func p_get_field_point(pos: Vector2i) -> int:
+	return field[clampi(pos.y, 0, rows - 1)][clampi(pos.x, 0, columns - 1)]
 
 func p_move_tetromino() -> void:
 	if !current_tetromino: return
 	
 	# Calculate new position
 	var new_position: Vector2i = current_tetromino.position
-	if new_x_pos > -1:
-		new_position.x = new_x_pos
-		new_x_pos = -1
-	new_position.y += 1
+	new_position.x = clampi(new_position.x + new_x_pos, 0, columns - 1)
+	if current_tetromino.position.y + 1 < rows:
+		new_position.y += 1
 	
-	if new_position.y + current_tetromino.get_size().y > rows:
-		p_setup_new_tetromino()
-		return
-
-	if new_position.x < 0 or new_position.x >= columns or new_position.y >= rows:
-		return
+	var dir: Vector2i = new_position - current_tetromino.position
+	var point_to_test: Vector2i = current_tetromino.point_to_test(dir)
+	
+	if dir == Vector2i(0, 1):
+		if new_position.y + point_to_test.y > rows - 1 or p_get_field_point(point_to_test + new_position) == 1:
+			p_setup_new_tetromino()
+			return
+	else:
+		if  p_get_field_point(point_to_test + new_position) == 1:
+			new_position.x = current_tetromino.position.x
 	
 	# Clear old position
-	for offset_y in current_tetromino.shape.size():
-		for offset_x in current_tetromino.shape[offset_y].size():
-			var global_x = current_tetromino.position.x + offset_x
-			var global_y = current_tetromino.position.y + offset_y
-			field[global_y][global_x] = 0
-
+	for offset in current_tetromino.shape:
+		var global_x: int = current_tetromino.position.x + offset.x
+		var global_y: int = current_tetromino.position.y + offset.y
+		field[clampi(global_y, 0, rows - 1)][clampi(global_x, 0, columns - 1)] = 0
 
 	current_tetromino.position = new_position
-	for offset_y in range(current_tetromino.shape.size()):
-		for offset_x in range(current_tetromino.shape[offset_y].size()):
-			var global_x: int = new_position.x + offset_x
-			var global_y: int = new_position.y + offset_y
-			if global_y >= 0 and global_y < rows and global_x >= 0 and global_x < columns:
-				field[global_y][global_x] = current_tetromino.shape[offset_y][offset_x]
+	for offset in current_tetromino.shape:
+		var global_x: int = new_position.x + offset.x
+		var global_y: int = new_position.y + offset.y
+		field[clampi(global_y, 0, rows -1)][clampi(global_x, 0, columns -1)] = 1
 	p_debug_render_play_area()
 
 func p_setup_play_area() -> void:
@@ -94,12 +97,22 @@ func p_setup_play_area() -> void:
 		field.push_back(list)
 
 func p_setup_new_tetromino() -> void:
+	var column_cleared: bool = false
+	
+	for row in field:
+		var cols: Array[int] = row
+		if cols.all(func(element): return element == 1):
+			cols.fill(0)
+			column_cleared = true
+	
+	if column_cleared:
+		p_debug_render_play_area()
+	
 	current_tetromino = tetrominos[randi_range(0, tetrominos.size() - 1)].duplicate()
 	current_tetromino.position = Vector2i(floori((columns - 1) * 0.5), 0)
 
-	for offset_y in current_tetromino.shape.size():
-		for offset_x in current_tetromino.shape[offset_y].size():
-			field[current_tetromino.position.y + offset_y][current_tetromino.position.x + offset_x] = current_tetromino.shape[offset_y][offset_x]
+	for offset in current_tetromino.shape:
+		field[current_tetromino.position.y + offset.y][current_tetromino.position.x + offset.x] = 1
 
 func p_debug_render_play_area() -> void:
 	for row in field:
