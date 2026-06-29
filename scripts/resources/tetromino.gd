@@ -27,3 +27,11 @@ func point_to_test(direction: Vector2i) -> Vector2i:
 			out.y = max(out.y, offset.y)
 		
 	return out
+
+func rotate_tetromino() -> void:
+	for i in shape.size():
+		var offset: Vector2i = shape[i]
+		var old: Vector2i = offset
+		offset.x = old.y
+		offset.y = old.x
+		shape[i] = offset

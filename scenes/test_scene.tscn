@@ -4,6 +4,9 @@
 [ext_resource type="Script" uid="uid://c568uc2hcdhhw" path="res://scripts/resources/tetromino.gd" id="2_7ddre"]
 [ext_resource type="Resource" uid="uid://dtgvc86gjedmj" path="res://prefabs/tetrominoes/square_tetromino.tres" id="3_qjeyg"]
 [ext_resource type="Resource" uid="uid://datlxm2rgdw0p" path="res://prefabs/tetrominoes/straight_tetromino.tres" id="4_3qnke"]
+[ext_resource type="Resource" uid="uid://d2eygt0qbu07r" path="res://prefabs/tetrominoes/l_tetromino.tres" id="5_qjeyg"]
+[ext_resource type="Resource" uid="uid://bppxs5vocvu45" path="res://prefabs/tetrominoes/skew_tetromino.tres" id="6_wtsjf"]
+[ext_resource type="Resource" uid="uid://dx3j5oueaabdn" path="res://prefabs/tetrominoes/t_tetromino.tres" id="7_rnaij"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_g7g4h"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -53,5 +56,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.003, 5.619)
 
 [node name="BaseTetris" type="Node" parent="." unique_id=1106971543]
 script = ExtResource("1_g7g4h")
-tetrominos = Array[ExtResource("2_7ddre")]([ExtResource("3_qjeyg"), ExtResource("4_3qnke")])
+tetrominos = Array[ExtResource("2_7ddre")]([ExtResource("3_qjeyg"), ExtResource("4_3qnke"), ExtResource("5_qjeyg"), ExtResource("6_wtsjf"), ExtResource("7_rnaij")])
+enable_console_field = true
 metadata/_custom_type_script = "uid://deumis18hyjht"

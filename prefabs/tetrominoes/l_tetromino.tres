@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Tetromino" format=3 uid="uid://d2eygt0qbu07r"]
+
+[ext_resource type="Script" uid="uid://c568uc2hcdhhw" path="res://scripts/resources/tetromino.gd" id="1_qjehs"]
+
+[resource]
+script = ExtResource("1_qjehs")
+shape = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, 1), Vector2i(0, 2), Vector2i(1, 2)])
+metadata/_custom_type_script = "uid://c568uc2hcdhhw"
