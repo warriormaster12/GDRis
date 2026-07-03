@@ -4,6 +4,7 @@ class_name Tetromino
 @export var shape: Array[Vector2i] = []
 @export_enum("red", "blue", "yellow", "orange", "green") var color: String = "red"
 var position: Vector2i = Vector2i.ZERO
+var rotation: int = 0
 
 func get_size() -> Vector2i:
 	assert(!shape.is_empty(), "shape is undefined")
@@ -29,9 +30,18 @@ func point_to_test(direction: Vector2i) -> Vector2i:
 	return out
 
 func rotate_tetromino() -> void:
+	rotation += 90
+	if rotation == 360:
+		rotation = 0
+	
+	var angle_rad: float = deg_to_rad(rotation)
+	var cos_angle: float = cos(angle_rad)
+	var sin_angle: float = sin(angle_rad)
+	
 	for i in shape.size():
-		var offset: Vector2i = shape[i]
-		var old: Vector2i = offset
-		offset.x = old.y
-		offset.y = old.x
-		shape[i] = offset
+		var original_offset: Vector2i = shape[i]
+		var rotated_x: int = absi(round(original_offset.x * cos_angle - original_offset.y * sin_angle))
+		var rotated_y: int = absi(round(original_offset.x * sin_angle + original_offset.y * cos_angle))
+
+		shape[i] = Vector2i(rotated_x, rotated_y)
+		print(shape[i], rotation)
