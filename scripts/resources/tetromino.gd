@@ -6,15 +6,6 @@ class_name Tetromino
 var position: Vector2i = Vector2i.ZERO
 var rotation: int = 0
 
-func get_size() -> Vector2i:
-	assert(!shape.is_empty(), "shape is undefined")
-	var x: int = 0
-	var y: int = 0
-	for i in shape:
-		x += i.x
-		y += i.y
-	return Vector2i(x, y)
-
 func point_to_test(direction: Vector2i) -> Vector2i:
 	var out: Vector2i = Vector2i.ZERO
 	for offset in shape:

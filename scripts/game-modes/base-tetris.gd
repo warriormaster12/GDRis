@@ -62,6 +62,32 @@ func p_get_field_point(pos: Vector2i) -> int:
 func p_set_field_point(pos: Vector2i, value: int) -> void:
 	field[clampi(pos.y, 0, rows - 1)][clampi(pos.x, 0, columns - 1)] = value
 
+func p_check_final_location(tetromino: Tetromino) -> Vector2i:
+	var current_position: Vector2i = tetromino.position
+	var last_valid_position: Vector2i = -Vector2i.ONE
+	var can_move_down: bool = true
+	while can_move_down:
+		current_position.y += 1
+		for offset in tetromino.shape:
+			var test_pos = current_position + offset
+			if p_get_field_point(test_pos) == 1:
+				var part_of_tetromino: bool = false
+				for test_offset in tetromino.shape:
+					if test_offset + tetromino.position == test_pos:
+						part_of_tetromino = true
+						break
+				can_move_down = part_of_tetromino
+				if !can_move_down:
+					last_valid_position = test_pos
+					last_valid_position.y -= 1
+					break
+
+			if test_pos.y == rows - 1:
+				last_valid_position = test_pos
+				can_move_down = false
+				break
+	return last_valid_position
+
 func p_move_tetromino() -> void:
 	if !current_tetromino: return
 	
@@ -70,16 +96,13 @@ func p_move_tetromino() -> void:
 	new_position.x = clampi(new_position.x + new_x_pos, 0, columns - 1)
 	new_position.y += 1
 	
-	var dir: Vector2i = new_position - current_tetromino.position
-	var point_to_test: Vector2i = current_tetromino.point_to_test(dir)
-	
-	if dir == Vector2i(0, 1):
-		if new_position.y + point_to_test.y > rows - 1 or p_get_field_point(point_to_test + new_position) == 1:
+	var final_pos: Vector2i = p_check_final_location(current_tetromino)
+
+	for offset in current_tetromino.shape:
+		var global_pos: Vector2i = offset + current_tetromino.position
+		if global_pos == final_pos:
 			p_setup_new_tetromino()
 			return
-	else:
-		if  p_get_field_point(point_to_test + new_position) == 1:
-			new_position.x = current_tetromino.position.x
 
 	# Clear old position
 	for offset in current_tetromino.shape:
