@@ -106,7 +106,6 @@ func p_move_tetromino() -> void:
 
 	for offset in current_tetromino.get_shape():
 		var global_pos: Vector2i = offset + current_tetromino.position
-		print(global_pos, final_position)
 		if global_pos == final_position:
 			p_setup_new_tetromino()
 			return
@@ -121,6 +120,17 @@ func p_move_tetromino() -> void:
 		can_rotate_tetromino = false
 
 	current_tetromino.position = new_position
+	
+	var over_play_area:int = 0
+	for offset in current_tetromino.get_shape():
+		var global_pos: Vector2i = current_tetromino.position + offset
+		if global_pos.x > columns - 1:
+			over_play_area = maxi(global_pos.x - (columns - 1), over_play_area)
+		elif global_pos.x < 0:
+			over_play_area = mini(global_pos.x, over_play_area)
+	
+	current_tetromino.position.x -= over_play_area
+
 	for offset in current_tetromino.get_shape():
 		p_set_field_point(current_tetromino.position + offset, 1)
 
