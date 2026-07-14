@@ -19,6 +19,8 @@ var tetromino_timer: Timer = Timer.new()
 var new_x_pos: int = 0
 
 var can_rotate_tetromino: bool = false
+var position_changed: bool = true
+var final_position: Vector2i = Vector2i.ZERO
 
 
 # Called when the node enters the scene tree for the first time.
@@ -44,8 +46,10 @@ func _process(_delta: float) -> void:
 	if current_tetromino:
 		if Input.is_action_pressed("move_l"):
 			new_x_pos = -1
+			position_changed = true
 		elif Input.is_action_pressed("move_r"):
 			new_x_pos = 1
+			position_changed = true
 		else:
 			new_x_pos = 0
 		if Input.is_action_pressed("rotate"):
@@ -68,11 +72,11 @@ func p_check_final_location(tetromino: Tetromino) -> Vector2i:
 	var can_move_down: bool = true
 	while can_move_down:
 		current_position.y += 1
-		for offset in tetromino.shape:
+		for offset in tetromino.get_shape():
 			var test_pos = current_position + offset
 			if p_get_field_point(test_pos) == 1:
 				var part_of_tetromino: bool = false
-				for test_offset in tetromino.shape:
+				for test_offset in tetromino.get_shape():
 					if test_offset + tetromino.position == test_pos:
 						part_of_tetromino = true
 						break
@@ -96,24 +100,28 @@ func p_move_tetromino() -> void:
 	new_position.x = clampi(new_position.x + new_x_pos, 0, columns - 1)
 	new_position.y += 1
 	
-	var final_pos: Vector2i = p_check_final_location(current_tetromino)
+	if position_changed:
+		final_position = p_check_final_location(current_tetromino)
+		position_changed = false
 
-	for offset in current_tetromino.shape:
+	for offset in current_tetromino.get_shape():
 		var global_pos: Vector2i = offset + current_tetromino.position
-		if global_pos == final_pos:
+		print(global_pos, final_position)
+		if global_pos == final_position:
 			p_setup_new_tetromino()
 			return
 
 	# Clear old position
-	for offset in current_tetromino.shape:
+	for offset in current_tetromino.get_shape():
 		p_set_field_point(current_tetromino.position + offset, 0)
 	
 	if can_rotate_tetromino:
 		current_tetromino.rotate_tetromino()
+		position_changed = true
 		can_rotate_tetromino = false
 
 	current_tetromino.position = new_position
-	for offset in current_tetromino.shape:
+	for offset in current_tetromino.get_shape():
 		p_set_field_point(current_tetromino.position + offset, 1)
 
 	p_debug_render_play_area()
@@ -163,7 +171,7 @@ func p_setup_new_tetromino() -> void:
 	current_tetromino = tetrominos[randi_range(0, tetrominos.size() - 1)].duplicate()
 	current_tetromino.position = Vector2i(floori((columns - 1) * 0.5), 0)
 
-	for offset in current_tetromino.shape:
+	for offset in current_tetromino.get_shape():
 		field[current_tetromino.position.y + offset.y][current_tetromino.position.x + offset.x] = 1
 
 func p_debug_render_play_area() -> void:

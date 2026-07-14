@@ -5,20 +5,14 @@ class_name Tetromino
 @export_enum("red", "blue", "yellow", "orange", "green") var color: String = "red"
 var position: Vector2i = Vector2i.ZERO
 var rotation: int = 0
+var rotated_shape: Array[Vector2i] = []
 
-func point_to_test(direction: Vector2i) -> Vector2i:
-	var out: Vector2i = Vector2i.ZERO
-	for offset in shape:
-		if direction.x == -1:
-			out.x = min(out.x, offset.x)
-		elif direction.x == 1:
-			out.x = max(out.x, offset.x)
-		if direction.y == -1:
-			out.y = min(out.y, offset.y)
-		elif direction.y == 1:
-			out.y = max(out.y, offset.y)
-		
-	return out
+func get_shape() -> Array[Vector2i]:
+	if rotated_shape.is_empty():
+		rotated_shape.resize(shape.size())
+		for i in shape.size(): 
+			rotated_shape[i] = shape[i]
+	return rotated_shape
 
 func rotate_tetromino() -> void:
 	rotation += 90
@@ -31,8 +25,6 @@ func rotate_tetromino() -> void:
 	
 	for i in shape.size():
 		var original_offset: Vector2i = shape[i]
-		var rotated_x: int = absi(round(original_offset.x * cos_angle - original_offset.y * sin_angle))
-		var rotated_y: int = absi(round(original_offset.x * sin_angle + original_offset.y * cos_angle))
+		var new_rotation: Vector2 = Vector2(original_offset.x * cos_angle - original_offset.y * sin_angle, original_offset.x * sin_angle + original_offset.y * cos_angle)
 
-		shape[i] = Vector2i(rotated_x, rotated_y)
-		print(shape[i], rotation)
+		rotated_shape[i] = Vector2i(roundi(new_rotation.x), roundi(new_rotation.y))
